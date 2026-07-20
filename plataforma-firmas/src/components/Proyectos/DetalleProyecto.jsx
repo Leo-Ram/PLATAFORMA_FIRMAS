@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import FormularioProyecto from './FormularioProyecto'
+import VotosProyecto from './VotosProyecto'
 
 export default function DetalleProyecto({ proyecto, esAdmin, onVolver, onActualizado }) {
   const [cambiando, setCambiando] = useState(false)
@@ -48,6 +49,8 @@ export default function DetalleProyecto({ proyecto, esAdmin, onVolver, onActuali
 
       <div dangerouslySetInnerHTML={{ __html: proyecto.contenido_html }} />
 
+      {proyecto.estado !== 'borrador' && <VotosProyecto proyecto={proyecto} />}
+      
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {esAdmin && proyecto.estado === 'borrador' && (
@@ -59,6 +62,18 @@ export default function DetalleProyecto({ proyecto, esAdmin, onVolver, onActuali
               {cambiando ? 'Actualizando...' : 'Pasar a votación'}
             </button>
           </div>
+        </div>
+      )}
+      {esAdmin && proyecto.estado === 'en_votacion' && (
+        <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#fff3f3', borderRadius: 8 }}>
+          <p>Este proyecto está en votación. Si necesitas detenerlo por algún motivo, puedes anularlo.</p>
+          <button
+            onClick={() => cambiarEstado('anulado')}
+            disabled={cambiando}
+            style={{ background: '#c62828', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: 4 }}
+          >
+            {cambiando ? 'Anulando...' : 'Anular proyecto'}
+          </button>
         </div>
       )}
     </div>
